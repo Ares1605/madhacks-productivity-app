@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activity Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <h2>Categories</h2>
+            <div id="categories">
+                <!-- Example category box, others can be dynamically added with JS -->
+                <div class="category">
+                    <span>Entertainment</span>
+                    <button class="add-button">Add</button>
+                    <label>
+                        <input type="checkbox" class="include-checkbox" data-category="Category 1">
+                        Include in graph
+                    </label>
+                </div>
+                <div class="category">
+                    <span>Productivity</span>
+                    <button class="add-button">Add</button>
+                    <label>
+                        <input type="checkbox" class="include-checkbox" data-category="Category 2">
+                        Include in graph
+                    </label>
+                </div>
+                <div class="category">
+                    <span>Friends and Family Time</span>
+                    <button class="add-button">Add</button>
+                    <label>
+                        <input type="checkbox" class="include-checkbox" data-category="Category 3">
+                        Include in graph
+                    </label>
+                </div>
+                <div class="category">
+                    <span>Daily Necessities</span>
+                    <button class="add-button">Add</button>
+                    <label>
+                        <input type="checkbox" class="include-checkbox" data-category="Category 4">
+                        Include in graph
+                    </label>
+                </div>
+                <div class="category">
+                    <span>Travel</span>
+                    <button class="add-button">Add</button>
+                    <label>
+                        <input type="checkbox" class="include-checkbox" data-category="Category 5">
+                        Include in graph
+                    </label>
+                </div>
+                <div class="category">
+                    <span>Idle Time</span>
+                    <button class="add-button">Add</button>
+                    <label>
+                        <input type="checkbox" class="include-checkbox" data-category="Category 6">
+                        Include in graph
+                    </label>
+                </div>
+                <!-- Add more categories dynamically here if needed -->
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main>
+            <!-- Dropdown for time range -->
+            <div class="controls">
+                <label for="time-range">Time Range:</label>
+                <select id="time-range">
+                    <option value="today">Today's Activity</option>
+                    <option value="last7days">Activity in the last 7 days</option>
+                </select>
+            </div>
+
+            <!-- Graph Area -->
+            <div id="graph-area">
+                <canvas id="activityGraph"></canvas>
+            </div>
+        </main>
+    </div>
+
+    <button id="exit-button" onclick="exitPage()">Exit</button>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+
+    <script>
+        function exitPage() {
+            window.close(); // Attempts to close the window (note: may not work depending on browser settings)
+        }
+    </script>
+
+</body>
+</html>
