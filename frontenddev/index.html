@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activity Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Logout Button -->
+    <button id="logout-button">Logout</button>
+
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <h2>Categories</h2>
+            <div id="categories">
+                <div class="category">
+                    <span>Entertainment</span>
+                    <button class="add-button">Add</button>
+                    <label>
+                        <input type="checkbox" class="include-checkbox" data-category="Category 1">
+                        Include in graph
+                    </label>
+                </div>
+                <div class="category">
+                    <span>Productivity</span>
+                    <button class="add-button">Add</button>
+                    <label>
+                        <input type="checkbox" class="include-checkbox" data-category="Category 2">
+                        Include in graph
+                    </label>
+                </div>
+                <div class="category">
+                    <span>Friends and Family Time</span>
+                    <button class="add-button">Add</button>
+                    <label>
+                        <input type="checkbox" class="include-checkbox" data-category="Category 3">
+                        Include in graph
+                    </label>
+                </div>
+                <div class="category">
+                    <span>Daily Necessities</span>
+                    <button class="add-button">Add</button>
+                    <label>
+                        <input type="checkbox" class="include-checkbox" data-category="Category 4">
+                        Include in graph
+                    </label>
+                </div>
+                <div class="category">
+                    <span>Travel</span>
+                    <button class="add-button">Add</button>
+                    <label>
+                        <input type="checkbox" class="include-checkbox" data-category="Category 5">
+                        Include in graph
+                    </label>
+                </div>
+                <div class="category">
+                    <span>Idle Time</span>
+                    <button class="add-button">Add</button>
+                    <label>
+                        <input type="checkbox" class="include-checkbox" data-category="Category 6">
+                        Include in graph
+                    </label>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main>
+            <div class="controls">
+                <label for="time-range">Time Range:</label>
+                <select id="time-range">
+                    <option value="today">Today's Activity</option>
+                    <option value="last7days">Activity in the last 7 days</option>
+                </select>
+            </div>
+
+            <div id="graph-area">
+                <canvas id="activityGraph"></canvas>
+            </div>
+        </main>
+    </div>
+
+    <!-- Popup Modal for Adding a Category -->
+    <div id="categoryModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" id="closeModalButton">&times;</span>
+            <h2>Add Category Details</h2>
+            <form id="categoryForm">
+                <label for="categoryName">Category Name:</label>
+                <input type="text" id="categoryName" required>
+
+                <label for="categoryTime">Time (in minutes):</label>
+                <input type="number" id="categoryTime" required min="0" max="1440">
+
+                <label for="categoryDate">Date:</label>
+                <input type="date" id="categoryDate" required>
+
+                <label for="categoryDescription">Description:</label>
+                <textarea id="categoryDescription" required></textarea>
+
+                <!-- Submit Button -->
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+
+    <script>
+        // Handle Logout Button
+        document.getElementById("logout-button").addEventListener("click", function() {
+            alert("You have logged out successfully.");
+            window.location.href = "login.html"; // Redirect to login page
+        });
+
+        function exitPage() {
+            window.close();
+        }
+    </script>
+</body>
+</html>
