@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 y: {
                     title: {
                         display: true,
-                        text: 'Hours Spent'
+                        text: 'Minutes Spent'
                     },
                     beginAtZero: true
                 }
@@ -33,22 +33,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const timeRangeSelector = document.getElementById("time-range");
 
-    // Mock data for demo
+    // Mock data for activity tracking
     const activityData = {
         today: {
-            "Category 1": 3,
-            "Category 2": 4,
-            "Category 3": 2
+            "Category 1": 180,
+            "Category 2": 240,
+            "Category 3": 120
         },
         last7days: {
-            "2024-11-03": { "Category 1": 2, "Category 2": 3 },
-            "2024-11-04": { "Category 1": 3, "Category 2": 1 },
-            "2024-11-05": { "Category 1": 1, "Category 3": 4 },
-            "2024-11-06": { "Category 2": 3, "Category 3": 2 },
-            "2024-11-07": { "Category 1": 4, "Category 2": 2, "Category 3": 1 },
+            "2024-11-03": { "Category 1": 120, "Category 2": 180 },
+            "2024-11-04": { "Category 1": 180, "Category 2": 60 },
+            "2024-11-05": { "Category 1": 60, "Category 3": 240 },
+            "2024-11-06": { "Category 2": 180, "Category 3": 120 },
+            "2024-11-07": { "Category 1": 240, "Category 2": 120, "Category 3": 60 },
         }
     };
 
+    // Function to update the graph
     function updateGraph() {
         const timeRange = timeRangeSelector.value;
         const selectedCategories = Array.from(
@@ -61,7 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (timeRange === "today") {
             graphData.labels = selectedCategories;
             graphData.datasets.push({
-                label: "Hours Spent",
+                label: "Minutes Spent",
                 data: selectedCategories.map(cat => activityData.today[cat] || 0),
                 backgroundColor: "rgba(75, 192, 192, 0.5)"
             });
@@ -87,4 +88,67 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     updateGraph(); // Initial load
+
+    // Modal handling
+    const addButtons = document.querySelectorAll(".add-button");
+    const modal = document.getElementById("categoryModal");
+    const categoryForm = document.getElementById("categoryForm");
+    const categoryNameInput = document.getElementById("categoryName");
+    const categoryTimeInput = document.getElementById("categoryTime");
+    const categoryDateInput = document.getElementById("categoryDate");
+    const categoryDescriptionInput = document.getElementById("categoryDescription");
+
+    // Show modal when add button is clicked
+    addButtons.forEach(button => {
+        button.addEventListener("click", () => {
+            modal.style.display = "block";
+        });
+    });
+
+    // Get the cross button by its ID and add a click event
+    const closeModalButton = document.getElementById("closeModalButton");
+
+    // Close the modal when the close button (cross) is clicked
+    closeModalButton.addEventListener("click", () => {
+        modal.style.display = "none"; // Simply close the modal
+        categoryForm.reset(); // Reset the form
+    });
+
+    // Handle form submission
+    categoryForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        const name = categoryNameInput.value;
+        const time = categoryTimeInput.value; // Get the time entered by the user (in minutes)
+        const date = categoryDateInput.value;
+        const description = categoryDescriptionInput.value;
+
+        // Validate the time input
+        if (isNaN(time) || time < 0 || time > 1440) {
+            alert("Please enter a valid number for time (0-1440 minutes).");
+            return;
+        }
+
+        // Ensure the date is provided
+        if (!date) {
+            alert("Please select a valid date.");
+            return;
+        }
+
+        console.log("Category Name:", name);
+        console.log("Category Time (in minutes):", time); // Log the time in minutes
+        console.log("Category Date:", date); // Log the date input
+        console.log("Category Description:", description);
+
+        modal.style.display = "none"; // Close the modal
+        categoryForm.reset(); // Reset the form after submission
+    });
+
+    // Close the modal if the user clicks outside of it
+    window.onclick = (event) => {
+        if (event.target === modal) {
+            modal.style.display = "none"; // Close the modal when clicking outside
+            categoryForm.reset(); // Reset the form when closing
+        }
+    };
 });
