@@ -2,16 +2,18 @@ import mysql.connector
 from mysql.connector import Error
 from typing import Optional, Any, Tuple
 from dotenv import find_dotenv, load_dotenv
+import os
+
 
 load_dotenv()
 
 class DB:
     def __init__(self):
         self.conn = mysql.connector.connection.MySQLConnection(
-            host = env.get("DB_HOST"),
-            user = env.get("DB_USER"),
-            password = env.get("DB_PASS"),
-            database = env.get("DB_SCHEMA")
+            host = os.getenv("DB_HOST"),
+            user = os.getenv("DB_USER"),
+            password = os.getenv("DB_PASS"),
+            database = os.getenv("DB_SCHEMA")
         )
     def insert(self, query: str, args: Tuple = (), lastrowid=True) -> Any:
         """

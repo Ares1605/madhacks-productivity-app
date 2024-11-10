@@ -1,14 +1,15 @@
 from datetime import datetime, timedelta
+from db import DB
 
 class YourClass:
     def __init__(self):
         self.db = DB()  # Initialize the DB instance
 
-    def inputEvent(self, date_from, duration, description):
-        query = "INSERT INTO users (date_from, duration, description) VALUES (%s, %s, %s);"
-
-        args = (date_from, duration, description)
-
+    def inputEvent(self, date_from, duration, description, category):
+        query = "INSERT INTO items (date_from, duration, description, category) VALUES (%s, %s, %s, %s);"
+        
+        args = (date_from, duration, description, category)
+        
         last_insert_id = self.db.insert(query, args)
 
         print(f"New event inserted with ID: {last_insert_id}")
@@ -16,7 +17,7 @@ class YourClass:
     def queryData(self, time: int, category: str):
         query = """
         SELECT SUM(duration) as total_duration
-        FROM users
+        FROM items
         WHERE category = %s
           AND date_from >= CURDATE() - INTERVAL %s DAY;
         """
@@ -32,6 +33,8 @@ class YourClass:
 
 your_class_instance = YourClass()
 
-your_class_instance.inputEvent('2024-11-08', 120, "Meeting about project")
+your_class_instance.inputEvent('2024-11-08', 120, "Meeting about project", "Productivity")
 
 your_class_instance.queryData(5, "productivity")
+
+
