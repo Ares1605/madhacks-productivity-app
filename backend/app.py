@@ -3,6 +3,7 @@
 
 import json
 from os import environ as env
+from db import DB
 from urllib.parse import quote_plus, urlencode
 
 from authlib.integrations.flask_client import OAuth
@@ -33,6 +34,11 @@ oauth.register(
 # Controllers API
 @app.route("/")
 def home():
+    user_id = "123abc"
+    db = DB()
+    rows = db.read("SELECT description FROM items WHERE user_id=?", (user_id,))
+    print(rows)
+
     return render_template(
         "home.html",
         session=session.get("user"),
