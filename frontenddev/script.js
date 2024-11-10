@@ -35,29 +35,69 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const timeRangeSelector = document.getElementById("time-range");
 
-    // Mock data for activity tracking
-    const activityData = {
-        today: {
-            "Entertainment": 180,
-            "Productivity": 240,
-            "Friends and Family Time": 120
-        },
-        last7days: {
-            "2024-11-03": { "Entertainment": 120, "Productivity": 180 },
-            "2024-11-04": { "Entertainment": 180, "Productivity": 60 },
-            "2024-11-05": { "Entertainment": 60, "Friends and Family Time": 240 },
-            "2024-11-06": { "Productivity": 180, "Friends and Family Time": 120 },
-            "2024-11-07": { "Entertainment": 240, "Productivity": 120, "Friends and Family Time": 60 },
+    // Function to fetch and process the actual activity data from the API
+    async function fetchActivityData(username) {
+        try {
+            const response = await fetch(`https://api.arrietty.org/items/${username}`);
+            const data = await response.json();
+
+            // Process the data into the required format
+            const activityData = {
+                today: {
+                    "Entertainment": 0,
+                    "Productivity": 0,
+                    "Friends and Family Time": 0
+                },
+                last7days: {}
+            };
+
+            // Get today's date for comparison
+            const today = new Date().toISOString().split('T')[0];
+
+            // Process each item from the API response
+            data.forEach(item => {
+                const date = new Date(item.date_from);
+                const dateKey = date.toISOString().split('T')[0]; // Extract date part (YYYY-MM-DD)
+
+                // Only include items within the last 7 days
+                if (dateKey >= today) {
+                    const section = item.section;
+                    const duration = parseInt(item.duration, 10);
+
+                    // Add the duration to the correct section for today
+                    if (dateKey === today) {
+                        if (activityData.today[section] === undefined) {
+                            activityData.today[section] = 0;
+                        }
+                        activityData.today[section] += duration;
+                    }
+
+                    // Add the duration to the correct section for the last 7 days
+                    if (!activityData.last7days[dateKey]) {
+                        activityData.last7days[dateKey] = {};
+                    }
+                    if (activityData.last7days[dateKey][section] === undefined) {
+                        activityData.last7days[dateKey][section] = 0;
+                    }
+                    activityData.last7days[dateKey][section] += duration;
+                }
+            });
+
+            return activityData;
+        } catch (error) {
+            console.error("Error fetching data:", error);
+            return null;
         }
-    };
+    }
 
     // Function to update the graph
-    function updateGraph() {
+    async function updateGraph() {
+        const username = "something"; // Replace with the actual username
         const timeRange = timeRangeSelector.value;
         const selectedCategories = Array.from(
             document.querySelectorAll(".include-checkbox:checked")
         ).map(cb => cb.dataset.category);
-        
+
         graphData.labels = [];
         graphData.datasets = [];
 
@@ -72,6 +112,12 @@ document.addEventListener("DOMContentLoaded", () => {
             "Category 5": "Travel",
             "Category 6": "Idle Time"
         };
+
+        const activityData = await fetchActivityData(username);
+
+        if (activityData === null) {
+            return; // If there's an error fetching data, exit early
+        }
 
         if (timeRange === "today") {
             // Set the graph labels to category names from selected categories
