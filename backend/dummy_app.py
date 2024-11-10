@@ -1,6 +1,7 @@
 import json
 from os import environ as env
 from urllib.parse import quote_plus, urlencode
+from flask_cors import CORS
 
 from authlib.integrations.flask_client import OAuth
 from dotenv import find_dotenv, load_dotenv
@@ -13,6 +14,7 @@ if ENV_FILE:
 app = Flask(__name__)
 app.secret_key = env.get("SECRET_KEY")
 
+CORS(app)
 
 oauth = OAuth(app)
 
