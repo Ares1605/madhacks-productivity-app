@@ -35,7 +35,7 @@ def ping():
     return "ping"
 @app.route("/items/<user_id>")
 def get_user_items(user_id):
-    return [{"section": "Productivity", "date_from": "09-11-2024 05:00:00", "duration": "60"}, {"section": "Entertainment", "date_from": "09-11-2024 07:30:25", "duration": "25"}, {"section": "Productivity", "date_from": "09-11-2024 15:08:30", "duration": "95"}]
+    return [{"section": "Productivity", "date_from": "10-11-2024 05:00:00", "duration": "60"},{"section": "Productivity", "date_from": "09-11-2024 05:00:00", "duration": "60"}, {"section": "Entertainment", "date_from": "09-11-2024 07:30:25", "duration": "25"}, {"section": "Productivity", "date_from": "09-11-2024 15:08:30", "duration": "95"}]
 @app.route("/items/<user_id>/set")
 def set_user_items(user_id):
     return {"success": True, "message": "Successfully added item"}
