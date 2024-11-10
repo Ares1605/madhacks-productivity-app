@@ -23,9 +23,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 y: {
                     title: {
                         display: true,
-                        text: 'Minutes Spent'
+                        text: 'Hours Spent'
                     },
-                    beginAtZero: true
+                    beginAtZero: true,
+                    suggestedMax: 5, // Adjust the suggested max value to leave space above the highest value
+                    stepSize: 1, // Set the step size for the y-axis to 1 hour increments
                 }
             }
         }
@@ -36,16 +38,16 @@ document.addEventListener("DOMContentLoaded", () => {
     // Mock data for activity tracking
     const activityData = {
         today: {
-            "Category 1": 180,
-            "Category 2": 240,
-            "Category 3": 120
+            "Entertainment": 180,
+            "Productivity": 240,
+            "Friends and Family Time": 120
         },
         last7days: {
-            "2024-11-03": { "Category 1": 120, "Category 2": 180 },
-            "2024-11-04": { "Category 1": 180, "Category 2": 60 },
-            "2024-11-05": { "Category 1": 60, "Category 3": 240 },
-            "2024-11-06": { "Category 2": 180, "Category 3": 120 },
-            "2024-11-07": { "Category 1": 240, "Category 2": 120, "Category 3": 60 },
+            "2024-11-03": { "Entertainment": 120, "Productivity": 180 },
+            "2024-11-04": { "Entertainment": 180, "Productivity": 60 },
+            "2024-11-05": { "Entertainment": 60, "Friends and Family Time": 240 },
+            "2024-11-06": { "Productivity": 180, "Friends and Family Time": 120 },
+            "2024-11-07": { "Entertainment": 240, "Productivity": 120, "Friends and Family Time": 60 },
         }
     };
 
@@ -55,30 +57,60 @@ document.addEventListener("DOMContentLoaded", () => {
         const selectedCategories = Array.from(
             document.querySelectorAll(".include-checkbox:checked")
         ).map(cb => cb.dataset.category);
-
+        
         graphData.labels = [];
         graphData.datasets = [];
 
+        let maxValue = 0; // Variable to track the maximum value for the y-axis
+
+        // Map selected categories to their actual names for display
+        const categoryNames = {
+            "Category 1": "Entertainment",
+            "Category 2": "Productivity",
+            "Category 3": "Friends and Family Time",
+            "Category 4": "Daily Necessities",
+            "Category 5": "Travel",
+            "Category 6": "Idle Time"
+        };
+
         if (timeRange === "today") {
-            graphData.labels = selectedCategories;
+            // Set the graph labels to category names from selected categories
+            graphData.labels = selectedCategories.map(category => categoryNames[category]);
+            const data = selectedCategories.map(cat => (activityData.today[categoryNames[cat]] || 0) / 60);  // Convert minutes to hours
+            maxValue = Math.max(...data); // Find the max value
+
             graphData.datasets.push({
-                label: "Minutes Spent",
-                data: selectedCategories.map(cat => activityData.today[cat] || 0),
+                label: "Hours Spent",
+                data: data,
                 backgroundColor: "rgba(75, 192, 192, 0.5)"
             });
-        } else {
+        } else if (timeRange === "last7days") {
             const days = Object.keys(activityData.last7days);
             graphData.labels = days;
 
             selectedCategories.forEach((category, idx) => {
-                graphData.datasets.push({
-                    label: category,
-                    data: days.map(day => activityData.last7days[day][category] || 0),
-                    backgroundColor: `rgba(${100 + idx * 50}, ${150 + idx * 30}, ${200 - idx * 20}, 0.5)`
-                });
+                const categoryName = categoryNames[category];
+                const categoryData = days.map(day => (activityData.last7days[day][categoryName] || 0) / 60);  // Convert minutes to hours
+
+                // Update the max value based on category data
+                maxValue = Math.max(maxValue, ...categoryData);
+
+                // If there's data to show for the selected category, add it to the datasets
+                if (categoryData.some(data => data > 0)) {
+                    graphData.datasets.push({
+                        label: categoryName,
+                        data: categoryData,
+                        backgroundColor: `rgba(${100 + idx * 50}, ${150 + idx * 30}, ${200 - idx * 20}, 0.5)`
+                    });
+                }
             });
         }
 
+        // Add a buffer of 1 hour (or whatever scale fits your data) to the max value
+        const suggestedMax = Math.ceil(maxValue) + 1;
+
+        // Update the chart options with the dynamically calculated suggested max
+        activityChart.options.scales.y.suggestedMax = suggestedMax;
         activityChart.update();
     }
 
@@ -119,36 +151,14 @@ document.addEventListener("DOMContentLoaded", () => {
         e.preventDefault();
 
         const name = categoryNameInput.value;
-        const time = categoryTimeInput.value; // Get the time entered by the user (in minutes)
+        const time = categoryTimeInput.value; // Get the time entered
         const date = categoryDateInput.value;
         const description = categoryDescriptionInput.value;
 
-        // Validate the time input
-        if (isNaN(time) || time < 0 || time > 1440) {
-            alert("Please enter a valid number for time (0-1440 minutes).");
-            return;
-        }
-
-        // Ensure the date is provided
-        if (!date) {
-            alert("Please select a valid date.");
-            return;
-        }
-
-        console.log("Category Name:", name);
-        console.log("Category Time (in minutes):", time); // Log the time in minutes
-        console.log("Category Date:", date); // Log the date input
-        console.log("Category Description:", description);
+        // Save category data to local storage or a database here
+        alert(`Category added: ${name}, Time: ${time} mins`);
 
         modal.style.display = "none"; // Close the modal
-        categoryForm.reset(); // Reset the form after submission
+        categoryForm.reset(); // Reset the form fields
     });
-
-    // Close the modal if the user clicks outside of it
-    window.onclick = (event) => {
-        if (event.target === modal) {
-            modal.style.display = "none"; // Close the modal when clicking outside
-            categoryForm.reset(); // Reset the form when closing
-        }
-    };
 });
